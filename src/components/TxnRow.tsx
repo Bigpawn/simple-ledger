@@ -111,6 +111,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingRight: 4,
     gap: 12,
+    // 行自身不透明，盖住滑动操作层的删除按钮（RNGH 3.x 不再用 opacity 隐藏未展开的动作）
+    backgroundColor: C.card,
   },
   rowBordered: {
     borderBottomWidth: StyleSheet.hairlineWidth,

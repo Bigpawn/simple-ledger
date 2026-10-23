@@ -11,7 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePreventRemove, type NavigationAction } from 'expo-router/react-navigation';
 import { ConfirmSheet } from '@/components/ConfirmSheet';
 import { CategoryIcon } from '@/components/CategoryIcon';
@@ -67,7 +67,6 @@ export default function TransactionScreen() {
   }>();
   const id = params.id;
   const router = useRouter();
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const accounts = useStore((s) => s.accounts);
   const categories = useStore((s) => s.categories);
@@ -92,7 +91,7 @@ export default function TransactionScreen() {
   const [error, setError] = useState('');
   const [feedback, setFeedback] = useState('');
   const [savedExit, setSavedExit] = useState(false);
-  const [pendingAction, setPendingAction] = useState<NavigationAction | null>(null);
+  const [pendingExit, setPendingExit] = useState<{ action: NavigationAction; repeat: () => void } | null>(null);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [frequentIds, setFrequentIds] = useState<string[]>([]);
   const [commonBills, setCommonBills] = useState<CommonBill[]>([]);
@@ -273,8 +272,8 @@ export default function TransactionScreen() {
     accountId !== baseline.accountId || (type === 'transfer' && toAccountId !== baseline.toAccountId) || date !== baseline.date
   );
 
-  usePreventRemove(!!dirty && !savedExit, ({ data }) => {
-    if (!saveLock.current) setPendingAction(data.action);
+  usePreventRemove(!!dirty && !savedExit, ({ data, repeat }) => {
+    if (!saveLock.current) setPendingExit({ action: data.action, repeat });
   });
 
   useEffect(() => {
@@ -476,11 +475,11 @@ export default function TransactionScreen() {
         },
       ]}
     >
-      <ConfirmSheet visible={!!pendingAction} title="放弃这次修改？" message="当前输入还没有保存，退出后需要重新填写。"
-        onCancel={() => setPendingAction(null)} onConfirm={() => {
-          const action = pendingAction;
-          setPendingAction(null);
-          if (action) navigation.dispatch(action);
+      <ConfirmSheet visible={!!pendingExit} title="放弃这次修改？" message="当前输入还没有保存，退出后需要重新填写。"
+        onCancel={() => setPendingExit(null)} onConfirm={() => {
+          const exit = pendingExit;
+          setPendingExit(null);
+          exit?.repeat();
         }} />
       {/* 顶部：关闭 / 类型切换 / 删除 */}
       <View style={styles.header} pointerEvents={saving ? 'none' : 'auto'}>
