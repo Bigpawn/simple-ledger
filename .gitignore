@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# 第三方 App 参考资源（仅本机个人研究，禁止提交/分发）
+/reference/
