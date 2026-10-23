@@ -301,7 +301,7 @@ export default function SearchScreen() {
                 </Pressable>
               )}
             </View>
-          ) : null
+          ) : undefined
         }
       />
 

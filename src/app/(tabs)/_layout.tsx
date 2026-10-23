@@ -23,11 +23,11 @@ function TabIcon({
 
 interface TabBarProps {
   state: { index: number; routes: { key: string; name: string }[] };
-  navigation: { navigate: (name: string) => void };
+  navigateToTab: (routeKey: string) => void;
   insets: { bottom: number };
 }
 
-function CustomTabBar({ state, navigation, insets }: TabBarProps) {
+function CustomTabBar({ state, navigateToTab, insets }: TabBarProps) {
   const routes = state.routes;
   // 布局：明细、图表、＋（中央缺口按钮）、资产、我的
   const order = [0, 1, -1, 2, 3];
@@ -78,7 +78,7 @@ function CustomTabBar({ state, navigation, insets }: TabBarProps) {
           <Pressable
             key={route.key}
             style={styles.tab}
-            onPress={() => navigation.navigate(route.name)}
+            onPress={() => navigateToTab(route.key)}
             accessibilityLabel={label}
             accessibilityRole="tab"
             accessibilityState={{ selected: focused }}
